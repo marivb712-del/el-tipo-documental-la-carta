@@ -1,0 +1,311 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>El Tipo Documental: La Carta — Juego Educativo</title>
+<style>
+  :root{
+    --rosa:#f6d7e3;
+    --vino:#7b163a;
+    --vino-dark:#5a0f2b;
+    --neutro:#fff9f9;
+    --texto:#2b1420;
+    --acento:#f2b8ce;
+  }
+  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body{margin:0;background:linear-gradient(180deg, var(--neutro) 0%, #fff 100%);color:var(--texto);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+  .card{width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(246,215,227,0.35));border-radius:16px;box-shadow:0 10px 30px rgba(123,22,58,0.12);overflow:hidden;border:1px solid rgba(123,22,58,0.06);}
+  header{display:flex;gap:20px;align-items:center;padding:28px 32px;background:linear-gradient(90deg,var(--rosa), #ffeef4);border-bottom:1px solid rgba(123,22,58,0.06);}
+  .logo{width:96px;height:96px;border-radius:12px;background:linear-gradient(180deg,var(--vino),var(--vino-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(123,22,58,0.15);}
+  h1{margin:0;font-size:20px;color:var(--vino-dark);}
+  p.lead{margin:6px 0 0 0;color:#4a2b34;font-size:13px;opacity:0.9;}
+  .content{padding:28px 32px;display:grid;grid-template-columns:1fr 360px;gap:22px;}
+  .panel{background:rgba(255,255,255,0.6);padding:18px;border-radius:12px;border:1px solid rgba(123,22,58,0.03);}
+  .start-center{text-align:center;padding:30px;}
+  .btn{display:inline-block;padding:12px 20px;border-radius:10px;background:var(--vino);color:white;text-decoration:none;font-weight:600;cursor:pointer;border:0;}
+  .btn.secondary{background:var(--acento);color:var(--vino-dark);}
+  .question-area{min-height:320px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;justify-content:center;}
+  .q-number{font-weight:700;color:var(--vino);}
+  .q-text{font-size:18px;margin:0 0 8px 0;}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+  .option{background:linear-gradient(180deg,#fff,#fff);padding:12px;border-radius:10px;border:1px solid rgba(123,22,58,0.08);cursor:pointer;transition:transform .12s, box-shadow .12s;}
+  .option:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(123,22,58,0.06);}
+  .option.correct{border-color:rgba(42,167,109,0.9);box-shadow:0 6px 18px rgba(42,167,109,0.08);}
+  .option.wrong{opacity:0.6;border-color:rgba(220,38,38,0.12);box-shadow:none;}
+  .side{display:flex;flex-direction:column;gap:12px;}
+  .img-thumb{width:100%;height:200px;background:#f8eef1;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid rgba(123,22,58,0.04);}
+  .img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .progress{height:10px;background:#fff;border-radius:999px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);}
+  .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--vino),var(--acento));width:0%;}
+  .meta{font-size:13px;color:#5d3941;}
+  footer{padding:18px 32px;background:linear-gradient(90deg,#fff0,#fff);border-top:1px solid rgba(123,22,58,0.04);display:flex;justify-content:space-between;align-items:center;}
+  .final{padding:30px;text-align:center;}
+  .small{font-size:12px;color:#6b4a51;}
+  @media (max-width:900px){
+    .content{grid-template-columns:1fr; }
+    .options{grid-template-columns:1fr;}
+    .side{order:2;}
+  }
+</style>
+</head>
+<body>
+<div class="card" role="application" aria-labelledby="title">
+  <header>
+    <div class="logo">LC</div>
+    <div>
+      <h1 id="title">El Tipo Documental: La Carta — Juego Educativo</h1>
+      <p class="lead">Juego de repaso — Modo individual · Colores: rosa & vino · Sin música</p>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="panel">
+      <div id="startScreen" class="start-center">
+        <div style="font-size:28px;font-weight:700;color:var(--vino-dark);margin-bottom:6px;">Bienvenido</div>
+        <div class="small" style="margin-bottom:18px;">Revisa conocimientos sobre las cartas: tipos, funciones y valor.</div>
+        <button class="btn" id="startBtn">Comenzar</button>
+      </div>
+
+      <div id="quizScreen" style="display:none;">
+        <div class="question-area">
+          <div class="q-number" id="qNum">Pregunta 1 / 7</div>
+          <div class="q-text" id="qText">Texto de la pregunta</div>
+          <div class="options" id="options"></div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:14px;">
+            <button class="btn secondary" id="nextBtn" style="display:none;">Siguiente</button>
+            <div id="resultMsg" class="small" style="margin-left:6px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="finalScreen" style="display:none;">
+        <div class="final">
+          <div style="font-size:22px;font-weight:700;color:var(--vino-dark);margin-bottom:4px;">¡Gracias por jugar!</div>
+          <div class="small" style="margin-bottom:18px;">Has completado el reto sobre <em>El Tipo Documental: La Carta</em>. 💌📜</div>
+          <div id="scoreBox" style="font-weight:700;color:var(--vino-dark);font-size:18px;"></div>
+          <div style="margin-top:14px;">
+            <button class="btn" id="restartBtn">Jugar de nuevo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="panel img-thumb" aria-hidden="true">
+        <img id="sideImage" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=60" alt="Imagen relacionada con carta">
+      </div>
+      <div class="panel">
+        <div class="meta">Progreso</div>
+        <div class="progress" aria-hidden="true" style="margin-top:8px;"><span id="progressBar"></span></div>
+        <div style="margin-top:10px;" class="small">Responde a tu ritmo. El juego es público y sin música.</div>
+      </div>
+      <div class="panel" style="text-align:center;">
+        <div class="meta">Instrucciones</div>
+        <div class="small" style="margin-top:8px;">Lee la pregunta, selecciona una opción y presiona "Siguiente". No hay límite de tiempo.</div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="small">Creado a partir de la presentación "El Tipo Documental: La Carta"</div>
+    <div class="small">Colores: rosa & vino</div>
+  </footer>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "¿Qué representa una carta a lo largo de la historia?",
+    img: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Un simple trozo de papel",
+      "Un medio para conectar personas y expresar emociones",
+      "Una forma antigua de arte",
+      "Un código secreto"
+    ],
+    answer: 1
+  },
+  {
+    q: "¿Qué característica distingue a la carta frente a la conversación oral?",
+    img: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Es más rápida",
+      "Es temporal",
+      "Permanece escrita en el tiempo",
+      "No tiene estructura"
+    ],
+    answer: 2
+  },
+  {
+    q: "¿Cuál de estas NO es una carta formal?",
+    img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Carta de recomendación",
+      "Carta de renuncia",
+      "Carta de cumpleaños",
+      "Carta de solicitud"
+    ],
+    answer: 2
+  },
+  {
+    q: "¿En qué ámbitos se usa principalmente la carta formal?",
+    img: "https://images.unsplash.com/photo-1519741495618-9dd7e4f5a5f7?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Familiar",
+      "Escolar",
+      "Empresarial, institucional y académico",
+      "Entre amigos"
+    ],
+    answer: 2
+  },
+  {
+    q: "¿Cómo se llama la carta que se usa para enviar avisos a muchas personas?",
+    img: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Carta personal",
+      "Circular o carta informativa",
+      "Carta de renuncia",
+      "Carta de amistad"
+    ],
+    answer: 1
+  },
+  {
+    q: "¿Qué valor tiene una carta además del comunicativo?",
+    img: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Ninguno",
+      "Valor decorativo",
+      "Valor legal y administrativo",
+      "Valor emocional únicamente"
+    ],
+    answer: 2
+  },
+  {
+    q: "¿Cómo se adapta la carta a la actualidad?",
+    img: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=800&q=60",
+    choices: [
+      "Desapareció con la tecnología",
+      "Se transformó en mensajes digitales sin perder su esencia",
+      "Solo se usa en negocios",
+      "Ya no tiene uso"
+    ],
+    answer: 1
+  }
+];
+
+let current = 0;
+let score = 0;
+const total = questions.length;
+
+const startBtn = document.getElementById('startBtn');
+const startScreen = document.getElementById('startScreen');
+const quizScreen = document.getElementById('quizScreen');
+const finalScreen = document.getElementById('finalScreen');
+const qNum = document.getElementById('qNum');
+const qText = document.getElementById('qText');
+const optionsEl = document.getElementById('options');
+const sideImage = document.getElementById('sideImage');
+const progressBar = document.getElementById('progressBar');
+const nextBtn = document.getElementById('nextBtn');
+const resultMsg = document.getElementById('resultMsg');
+const scoreBox = document.getElementById('scoreBox');
+const restartBtn = document.getElementById('restartBtn');
+
+function showStart(){
+  startScreen.style.display = '';
+  quizScreen.style.display = 'none';
+  finalScreen.style.display = 'none';
+}
+function startQuiz(){
+  startScreen.style.display = 'none';
+  quizScreen.style.display = '';
+  finalScreen.style.display = 'none';
+  current = 0;
+  score = 0;
+  renderQuestion();
+}
+function renderQuestion(){
+  const item = questions[current];
+  qNum.textContent = `Pregunta ${current+1} / ${total}`;
+  qText.textContent = item.q;
+  sideImage.src = item.img;
+  optionsEl.innerHTML = '';
+  resultMsg.textContent = '';
+  nextBtn.style.display = 'none';
+  item.choices.forEach((c,i)=>{
+    const d = document.createElement('button');
+    d.className = 'option';
+    d.setAttribute('data-i',i);
+    d.innerHTML = `<div style="font-weight:600">${String.fromCharCode(65+i)}.</div><div style="margin-top:6px">${c}</div>`;
+    d.addEventListener('click', chooseOption);
+    optionsEl.appendChild(d);
+  });
+  updateProgress();
+}
+function chooseOption(e){
+  const chosen = Number(e.currentTarget.getAttribute('data-i'));
+  const correct = questions[current].answer;
+  // mark options
+  Array.from(optionsEl.children).forEach(btn=>{
+    btn.removeEventListener('click', chooseOption);
+    const idx = Number(btn.getAttribute('data-i'));
+    if(idx === correct){
+      btn.classList.add('correct');
+    }
+    if(idx === chosen && idx !== correct){
+      btn.classList.add('wrong');
+    }
+    // dim others
+    if(idx !== correct && idx !== chosen) btn.style.opacity = 0.9;
+  });
+  if(chosen === correct) {
+    score += 1;
+    resultMsg.textContent = 'Respuesta correcta';
+  } else {
+    resultMsg.textContent = 'Respuesta incorrecta';
+  }
+  nextBtn.style.display = '';
+}
+function updateProgress(){
+  const pct = Math.round((current/total)*100);
+  progressBar.style.width = pct + '%';
+}
+function nextQuestion(){
+  current++;
+  if(current >= total){
+    endQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+function endQuiz(){
+  startScreen.style.display = 'none';
+  quizScreen.style.display = 'none';
+  finalScreen.style.display = '';
+  scoreBox.textContent = `Tu puntuación: ${score} / ${total}`;
+  progressBar.style.width = '100%';
+}
+startBtn.addEventListener('click', startQuiz);
+nextBtn.addEventListener('click', nextQuestion);
+restartBtn.addEventListener('click', startQuiz);
+
+// allow keyboard navigation (1-4)
+document.addEventListener('keydown', function(e){
+  if(quizScreen.style.display === '') {
+    const k = e.key;
+    if(['1','2','3','4'].includes(k)){
+      const idx = Number(k)-1;
+      const btn = optionsEl.querySelector(`.option[data-i="${idx}"]`);
+      if(btn) btn.click();
+    } else if(k === 'Enter' && nextBtn.style.display !== 'none'){
+      nextBtn.click();
+    }
+  } else if(startScreen.style.display === '' && (e.key === 'Enter' || e.key === ' ')){
+    startBtn.click();
+  }
+});
+</script>
+</body>
+</html>
